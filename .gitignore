@@ -1,0 +1,68 @@
+# Compiled Output
+/dist
+/build
+
+# Dependencies
+/node_modules
+.github
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Tests & Coverage
+/coverage
+/.nyc_output
+
+# IDEs and Editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.swo
+*~
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Temp & Runtime
+.temp
+.tmp
+tmp/
+temp/
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Docker (local volumes)
+docker-data/
+pgdata/
+
+# AI Instructions (optional - remove if you want it public)
+CLAUDE.md

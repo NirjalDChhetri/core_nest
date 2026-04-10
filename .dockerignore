@@ -1,0 +1,61 @@
+# Dependencies (rebuilt inside container)
+node_modules
+
+# Build output (rebuilt inside container)
+dist
+build
+
+# Source control
+.git
+.gitignore
+
+# Environment files (injected at runtime via env_file / secrets)
+.env
+.env.*
+!.env.example
+
+# IDE / Editor
+.vscode
+.idea
+*.sublime-workspace
+*.sublime-project
+
+# Tests & Coverage
+coverage
+.nyc_output
+test
+**/*.spec.ts
+**/*.e2e-spec.ts
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Documentation & GitHub
+.github
+*.md
+LICENSE
+CLAUDE.md
+
+# Docker files (prevent recursive context)
+docker-compose*.yml
+Dockerfile*
+docker-data
+pgdata
+
+# Logs & Temp
+logs
+*.log
+.temp
+.tmp
+tmp
+temp
+pids
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Misc
+.turbo
+.cache
+.eslintcache
