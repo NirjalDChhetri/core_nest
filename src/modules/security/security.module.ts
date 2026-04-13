@@ -1,10 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { SecurityController } from './security.controller';
-import { CsrfTokenService } from '@common/middleware/csrf.middleware';
+import {
+  CsrfTokenService,
+  CsrfProtectionProvider,
+} from '@common/middleware/csrf.middleware';
 
+@Global()
 @Module({
   controllers: [SecurityController],
-  providers: [CsrfTokenService],
-  exports: [CsrfTokenService],
+  providers: [CsrfProtectionProvider, CsrfTokenService],
+  exports: [CsrfProtectionProvider, CsrfTokenService],
 })
 export class SecurityModule {}

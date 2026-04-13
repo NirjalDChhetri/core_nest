@@ -10,13 +10,19 @@ import {
   databaseConfigValidationSchema,
   jwt,
   jwtConfigValidationSchema,
+  mail,
+  mailConfigValidationSchema,
+  redis,
+  redisConfigValidationSchema,
+  oauth2,
+  oauth2ConfigValidationSchema,
 } from '../configs';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: [`${process.cwd()}/env/.env.${process.env.NODE_ENV}`],
-      load: [app, database, jwt],
+      load: [app, database, jwt, mail, redis, oauth2],
       cache: true,
       isGlobal: true,
       expandVariables: true,
@@ -24,6 +30,9 @@ import {
         ...appConfigValidationSchema,
         ...databaseConfigValidationSchema,
         ...jwtConfigValidationSchema,
+        ...mailConfigValidationSchema,
+        ...redisConfigValidationSchema,
+        ...oauth2ConfigValidationSchema,
       }),
       validationOptions: {
         abortEarly: true,

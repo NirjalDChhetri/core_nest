@@ -4,13 +4,17 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { JwtStrategy, JwtRefreshStrategy } from './strategies';
+import { JwtStrategy, JwtRefreshStrategy, GoogleStrategy } from './strategies';
 import { UserModule } from '@modules/user/user.module';
+import { TokenModule } from '@modules/token/token.module';
+import { OtpModule } from '@modules/otp/otp.module';
 import type { Configs } from '@lib/config/config.interface';
 
 @Module({
   imports: [
     UserModule,
+    TokenModule,
+    OtpModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -27,7 +31,7 @@ import type { Configs } from '@lib/config/config.interface';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtRefreshStrategy],
+  providers: [AuthService, JwtStrategy, JwtRefreshStrategy, GoogleStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

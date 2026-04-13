@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseRepository } from '@common/repositories/base.repository';
-import { User } from '@entities/user.entity';
+import { User, AuthProvider } from '@entities/user.entity';
 import { IUserRepository } from '../interfaces/user-repository.interface';
 
 @Injectable()
@@ -29,18 +29,36 @@ export class UserRepository
       .getOne();
   }
 
-  async findByIdWithRefreshToken(id: number): Promise<User | null> {
-    return this.userRepository
-      .createQueryBuilder('user')
-      .addSelect('user.hashedRefreshToken')
-      .where('user.id = :id', { id })
-      .getOne();
+  async findByEmailWithProvider(
+    email: string,
+    provider: AuthProvider,
+  ): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email, provider } });
   }
 
-  async updateRefreshToken(
-    id: number,
-    hashedRefreshToken: string | null,
+  async findByProviderId(providerId: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { providerId } });
+  }
+
+  async updatePassword(userId: number, hashedPassword: string): Promise<void> {
+    await this.userRepository.update(userId, { password: hashedPassword });
+  }
+
+  async updateProfile(
+    userId: number,
+    data: Partial<Pick<User, 'firstName' | 'lastName'>>,
   ): Promise<void> {
-    await this.userRepository.update(id, { hashedRefreshToken });
+    await this.userRepository.update(userId, data);
+  }
+
+  async findAllPaginated(
+    skip: number,
+    take: number,
+  ): Promise<[User[], number]> {
+    return this.userRepository.findAndCount({
+      skip,
+      take,
+      order: { createdAt: 'DESC' },
+    });
   }
 }

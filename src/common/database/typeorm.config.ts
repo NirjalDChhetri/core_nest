@@ -23,6 +23,4 @@ export const typeOrmBaseOptions: Partial<PostgresConnectionOptions> = {
 
   synchronize: false,
   dropSchema: false,
-
-
 };
