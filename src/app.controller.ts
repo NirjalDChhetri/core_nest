@@ -17,7 +17,9 @@ export class AppController {
 
   @Public()
   @Get('test')
-  @ApiOperation({ summary: 'Test endpoint — used by Docker and load balancers' })
+  @ApiOperation({
+    summary: 'Test endpoint — used by Docker and load balancers',
+  })
   @ApiResponse({ status: 200, description: 'Test endpoint' })
   health(): { status: string } {
     return { status: 'ok' };
