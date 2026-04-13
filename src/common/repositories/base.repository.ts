@@ -33,6 +33,9 @@ export abstract class BaseRepository<
   }
 
   async delete(id: number): Promise<void> {
+    await this.repository.update(id, {
+      isDeleted: true,
+    } as any);
     await this.repository.softDelete(id);
   }
 }
