@@ -2,7 +2,6 @@ import type { INestApplication } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import type { app } from '@lib/config/configs';
-import { HelperService } from '@common/helpers';
 
 type AppConfig = ConfigType<typeof app>;
 
@@ -10,7 +9,7 @@ export function setupSwagger(
   application: INestApplication,
   appConfig: AppConfig,
 ) {
-  if (HelperService.isProd()) return;
+  if (!appConfig.swaggerEnabled) return;
 
   const config = new DocumentBuilder()
     .setTitle(appConfig.name)
