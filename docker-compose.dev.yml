@@ -1,0 +1,24 @@
+# Development override — enables hot-reload via volume-mounted source code
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# IMPORTANT: Always use  docker compose down -v  before rebuilding to clear stale volumes.
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      SWAGGER_ENABLED: "true"
+      CHOKIDAR_USEPOLLING: "true"    # Required for hot-reload in Docker on Windows
+    volumes:
+      - ./src:/app/src:delegated      # Mount source code for hot-reload
+      - ./env:/app/env:ro             # Mount env files (read-only)
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./tsconfig.build.json:/app/tsconfig.build.json:ro
+      - ./nest-cli.json:/app/nest-cli.json:ro
+      - /app/node_modules             # Preserve container node_modules
+    deploy:
+      resources:
+        limits:
+          memory: 512m

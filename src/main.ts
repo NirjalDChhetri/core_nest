@@ -2,7 +2,6 @@ import { AppModule } from './app.module';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import { ConfigService } from '@nestjs/config';
-import { HelperService } from '@common/helpers';
 import { AllExceptionFilter, QueryFailedFilter } from '@common/filters';
 import {
   TimeoutInterceptor,
@@ -38,7 +37,7 @@ async function bootstrap() {
   await app.listen(appConfig.port);
 
   logger.log(`Application is running on: ${appConfig.url}`);
-  if (!HelperService.isProd()) {
+  if (appConfig.swaggerEnabled) {
     logger.log(`Swagger docs: ${appConfig.url}/docs`);
   }
 }

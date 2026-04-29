@@ -1,0 +1,37 @@
+# ─── Stage 1: Builder ────────────────────────────────────────────────────────
+FROM node:24-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies first (layer cache)
+COPY package*.json ./
+RUN npm ci
+
+# Copy source and config files required for the build
+COPY tsconfig*.json nest-cli.json ./
+COPY src ./src
+
+# Compile TypeScript → dist/ (webpack bundles and resolves all path aliases)
+RUN npm run build
+
+
+# ─── Stage 2: Production ─────────────────────────────────────────────────────
+FROM node:24-alpine
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Install production dependencies only
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Copy compiled output from builder
+COPY --from=builder /app/dist ./dist
+
+# Run as non-root user (node user exists in node:alpine images)
+USER node
+
+EXPOSE 8000
+
+CMD ["node", "dist/main"]
