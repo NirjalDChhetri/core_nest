@@ -16,6 +16,7 @@ export const appConfigValidationSchema = {
   CSRF_SECRET: Joi.string().min(32).required(),
   THROTTLE_TTL: Joi.number().default(60),
   THROTTLE_LIMIT: Joi.number().default(10),
+  SWAGGER_ENABLED: Joi.boolean().default(false),
 };
 
 // Config
@@ -29,4 +30,5 @@ export const app = registerAs('app', () => ({
   csrfSecret: process.env.CSRF_SECRET!,
   throttleTtl: Number(process.env.THROTTLE_TTL || 60),
   throttleLimit: Number(process.env.THROTTLE_LIMIT || 10),
+  swaggerEnabled: process.env.SWAGGER_ENABLED === 'true',
 }));

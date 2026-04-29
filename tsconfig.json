@@ -27,5 +27,10 @@
     "noFallthroughCasesInSwitch": false,
      "types": ["jest"]
   },
+  "watchOptions": {
+    "watchFile": "dynamicPriorityPolling",
+    "watchDirectory": "dynamicPriorityPolling",
+    "fallbackPolling": "dynamicPriority"
+  },
   "exclude": ["node_modules", "dist"]
 }
