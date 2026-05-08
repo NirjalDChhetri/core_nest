@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RoleEnum } from '@common/enums';
 import { AuthProvider, User } from '@entities/user.entity';
 
 export class UserProfileResponse {
@@ -18,8 +17,8 @@ export class UserProfileResponse {
   @ApiProperty({ example: 'john@example.com' })
   email!: string;
 
-  @ApiProperty({ enum: RoleEnum, example: RoleEnum.USER })
-  role!: RoleEnum;
+  @ApiProperty({ example: ['user'], type: [String] })
+  roles!: string[];
 
   @ApiProperty({ enum: AuthProvider, example: AuthProvider.LOCAL })
   provider!: AuthProvider;
@@ -37,7 +36,7 @@ export class UserProfileResponse {
     response.firstName = user.firstName;
     response.lastName = user.lastName;
     response.email = user.email;
-    response.role = user.role;
+    response.roles = user.roles?.map((r) => r.name) ?? [];
     response.provider = user.provider;
     response.isActive = user.isActive!;
     response.createdAt = user.createdAt!;

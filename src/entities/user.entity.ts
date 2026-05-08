@@ -1,6 +1,13 @@
-import { Column, Entity, Index, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { BaseEntity } from '@common/database/base.entity';
-import { RoleEnum } from '@common/enums';
+import { Role } from './role.entity';
 
 export enum AuthProvider {
   LOCAL = 'local',
@@ -11,10 +18,13 @@ export enum AuthProvider {
 
 @Entity('users')
 export class User extends BaseEntity {
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 50 })
   firstName!: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  middleName?: string | null;
+
+  @Column({ type: 'varchar', length: 50 })
   lastName!: string;
 
   @Index({ unique: true })
@@ -24,8 +34,13 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 255, select: false, nullable: true })
   password?: string | null;
 
-  @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.USER })
-  role!: RoleEnum;
+  @Index()
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  mobileNumber?: string | null;
+
+  @Index()
+  @Column({ type: 'timestamp', nullable: true })
+  lastLogin?: Date | null;
 
   @Column({
     type: 'enum',
@@ -36,6 +51,17 @@ export class User extends BaseEntity {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   providerId?: string | null;
+
+  @ManyToMany(() => Role, (role) => role.users, { eager: true })
+  @JoinTable({
+    name: 'user_roles',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
+  })
+  roles!: Role[];
+
+  @OneToMany('UserDevice', 'user')
+  devices?: import('./user-device.entity').UserDevice[];
 
   @OneToMany('RefreshToken', 'user')
   refreshTokens?: import('./refresh-token.entity').RefreshToken[];

@@ -1,10 +1,12 @@
-import { HelperService } from '@common/helpers';
 import { Logger } from '@nestjs/common';
+import { HelperService } from '@common/helpers';
+import { SnakeNamingStrategy } from './snake-naming.strategy';
 import type { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 const logger = new Logger('TypeORM');
 
 export const typeOrmBaseOptions: Partial<PostgresConnectionOptions> = {
+  namingStrategy: new SnakeNamingStrategy(),
   entities: ['dist/entities/*.entity.js'],
   migrations: ['dist/migrations/*.js'],
   migrationsTableName: 'typeorm_migrations',

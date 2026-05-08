@@ -1,5 +1,6 @@
 export { BearerToken } from './bearer-token.decorator';
 export { CurrentUser } from './current-user.decorator';
+export { DeviceMeta } from './device-meta.decorator';
 export { Public, IS_PUBLIC_KEY } from './public.decorator';
 export {
   ResponseMessage,
