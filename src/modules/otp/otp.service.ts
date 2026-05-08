@@ -29,8 +29,8 @@ export class OtpService {
     email: string,
     type: OtpType,
   ): Promise<void> {
-    // Invalidate any pending OTPs of the same type for this user
-    await this.otpRepository.invalidateByUserAndType(userId, type);
+    // Remove any pending OTPs of the same type for this user before creating a new one
+    await this.otpRepository.deletePendingByUserAndType(userId, type);
 
     // Generate a 6-digit code
     const plainCode = this.generateCode();

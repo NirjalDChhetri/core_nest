@@ -1,14 +1,25 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { USER_REPOSITORY } from './interfaces/user-repository.interface';
 import type { IUserRepository } from './interfaces/user-repository.interface';
 import { User } from '@entities/user.entity';
 import { AuthProvider } from '@entities/user.entity';
+import { Role } from '@entities/role.entity';
+import { RoleEnum } from '@common/enums';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
   ) {}
 
   async findById(id: number): Promise<User> {
@@ -50,9 +61,20 @@ export class UserService {
     if (existing) {
       return existing;
     }
+
+    const defaultRole = await this.roleRepository.findOne({
+      where: { name: RoleEnum.USER },
+    });
+    if (!defaultRole) {
+      throw new InternalServerErrorException(
+        'Default user role not found. Please seed the database.',
+      );
+    }
+
     const user = this.userRepository.create({
       ...data,
       isActive: true,
+      roles: [defaultRole],
     });
     return this.userRepository.save(user);
   }

@@ -17,7 +17,7 @@ export class OtpLog extends BaseEntity {
   userId!: number;
 
   @ManyToOne(() => User, (user) => user.otpLogs, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'user_id' })
   user!: User;
 
   @Column({ type: 'enum', enum: OtpType })

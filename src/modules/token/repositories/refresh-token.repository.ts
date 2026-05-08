@@ -17,32 +17,69 @@ export class RefreshTokenRepository
     super(refreshTokenRepository);
   }
 
-  async findByUserId(userId: number): Promise<RefreshToken[]> {
-    return this.refreshTokenRepository.find({ where: { userId } });
-  }
-
-  async findActiveByUserId(userId: number): Promise<RefreshToken | null> {
+  async findActiveByIdx(idx: string): Promise<RefreshToken | null> {
     return this.refreshTokenRepository
       .createQueryBuilder('rt')
       .addSelect('rt.hashedToken')
-      .where('rt.userId = :userId', { userId })
+      .where('rt.idx = :idx', { idx })
+      .andWhere('rt.isRevoked = false')
       .andWhere('rt.isDeleted = false')
       .andWhere('rt.expiresAt > :now', { now: new Date() })
-      .orderBy('rt.createdAt', 'DESC')
       .getOne();
   }
 
-  async revokeAllForUser(userId: number): Promise<void> {
-    await this.refreshTokenRepository.update({ userId }, {
-      isDeleted: true,
-    } as any);
-    await this.refreshTokenRepository.softDelete({ userId });
+  async findRevokedByIdx(idx: string): Promise<RefreshToken | null> {
+    return this.refreshTokenRepository.findOne({
+      where: { idx, isRevoked: true, isDeleted: false },
+    });
   }
 
-  async revokeById(id: number): Promise<void> {
-    await this.refreshTokenRepository.update(id, {
-      isDeleted: true,
-    } as any);
-    await this.refreshTokenRepository.softDelete(id);
+  async findActiveSessionsByUserId(userId: number): Promise<RefreshToken[]> {
+    return this.refreshTokenRepository
+      .createQueryBuilder('rt')
+      .where('rt.userId = :userId', { userId })
+      .andWhere('rt.isRevoked = false')
+      .andWhere('rt.isDeleted = false')
+      .andWhere('rt.expiresAt > :now', { now: new Date() })
+      .orderBy('rt.lastUsedAt', 'DESC', 'NULLS LAST')
+      .addOrderBy('rt.createdAt', 'DESC')
+      .getMany();
+  }
+
+  async revokeByIdx(idx: string, userId: number): Promise<boolean> {
+    const result = await this.refreshTokenRepository.update(
+      { idx, userId, isRevoked: false },
+      { isRevoked: true, revokedAt: new Date(), isActive: false },
+    );
+    return (result.affected ?? 0) > 0;
+  }
+
+  async revokeByDeviceId(userId: number, deviceId: number): Promise<void> {
+    await this.refreshTokenRepository.update(
+      { userId, deviceId, isRevoked: false },
+      { isRevoked: true, revokedAt: new Date(), isActive: false },
+    );
+  }
+
+  async revokeAllForUser(userId: number): Promise<void> {
+    await this.refreshTokenRepository.update(
+      { userId, isRevoked: false },
+      { isRevoked: true, revokedAt: new Date(), isActive: false },
+    );
+  }
+
+  async touchLastUsed(id: number): Promise<void> {
+    await this.refreshTokenRepository.update(id, { lastUsedAt: new Date() });
+  }
+
+  async deleteExpired(): Promise<number> {
+    const result = await this.refreshTokenRepository
+      .createQueryBuilder()
+      .delete()
+      .from(RefreshToken)
+      .where('expiresAt < :now', { now: new Date() })
+      .andWhere('isRevoked = true')
+      .execute();
+    return result.affected ?? 0;
   }
 }
