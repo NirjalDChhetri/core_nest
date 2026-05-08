@@ -18,6 +18,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientSecret: oauth2Config.google.clientSecret,
       callbackURL: oauth2Config.google.callbackUrl,
       scope: ['email', 'profile'],
+      state: false,
     });
   }
 
@@ -27,22 +28,26 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: any,
     done: VerifyCallback,
   ): Promise<void> {
-    const { id, emails, name } = profile;
-    const email = emails?.[0]?.value;
+    try {
+      const { id, emails, name } = profile;
+      const email = emails?.[0]?.value;
 
-    if (!email) {
-      done(new Error('Google account does not have an email'), undefined);
-      return;
+      if (!email) {
+        done(new Error('Google account does not have an email'), undefined);
+        return;
+      }
+
+      const user = await this.userService.findOrCreateOAuthUser({
+        email,
+        firstName: name?.givenName ?? '',
+        lastName: name?.familyName ?? '',
+        providerId: id,
+        provider: AuthProvider.GOOGLE,
+      });
+
+      done(null, user);
+    } catch (error) {
+      done(error as Error, undefined);
     }
-
-    const user = await this.userService.findOrCreateOAuthUser({
-      email,
-      firstName: name?.givenName ?? '',
-      lastName: name?.familyName ?? '',
-      providerId: id,
-      provider: AuthProvider.GOOGLE,
-    });
-
-    done(null, user);
   }
 }

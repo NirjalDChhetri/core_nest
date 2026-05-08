@@ -24,6 +24,10 @@ export function setupSwagger(
       { type: 'apiKey', in: 'header', name: 'x-csrf-token' },
       'csrf-token',
     )
+    .addApiKey(
+      { type: 'apiKey', in: 'header', name: 'X-Device-Id' },
+      'device-id',
+    )
     .addSecurityRequirements('csrf-token')
     .addServer(appConfig.url)
     .build();

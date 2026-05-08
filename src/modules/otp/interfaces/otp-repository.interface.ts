@@ -8,5 +8,5 @@ export interface IOtpRepository extends IBaseRepository<OtpLog> {
     userId: number,
     type: OtpType,
   ): Promise<OtpLog | null>;
-  invalidateByUserAndType(userId: number, type: OtpType): Promise<void>;
+  deletePendingByUserAndType(userId: number, type: OtpType): Promise<void>;
 }

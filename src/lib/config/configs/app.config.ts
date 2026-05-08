@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import process from 'node:process';
 import { registerAs } from '@nestjs/config';
-import { APP_ENVIRONMENTS, VERSION_VALIDATION_MESSAGE } from '@common/constant';
+import { APP_ENVIRONMENTS } from '@common/constant';
 
 // Validation schema
 export const appConfigValidationSchema = {
@@ -10,6 +10,7 @@ export const appConfigValidationSchema = {
     .required(),
   APP_PORT: Joi.number().port().required(),
   API_URL: Joi.string().uri().required(),
+  CLIENT_URL: Joi.string().uri().required(),
   APP_PREFIX: Joi.string().default('api/v1'),
   APP_NAME: Joi.string().required(),
   CORS_ORIGINS: Joi.string().required(),
@@ -25,6 +26,7 @@ export const app = registerAs('app', () => ({
   prefix: process.env.APP_PREFIX!,
   env: process.env.NODE_ENV!,
   url: process.env.API_URL!,
+  clientUrl: process.env.CLIENT_URL!,
   name: process.env.APP_NAME!,
   corsOrigins: process.env.CORS_ORIGINS!.split(',').map((o) => o.trim()),
   csrfSecret: process.env.CSRF_SECRET!,

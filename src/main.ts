@@ -1,7 +1,7 @@
-import { AppModule } from './app.module';
-import { NestFactory, Reflector } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
+import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AllExceptionFilter, QueryFailedFilter } from '@common/filters';
 import {
   TimeoutInterceptor,
